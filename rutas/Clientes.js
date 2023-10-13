@@ -3,15 +3,12 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 const clienteSchema = new mongoose.Schema({
-    "_id": {
-      "$oid": "6524a409e4c56aadafe72b98"
-    },
-    "nombreCliente": "",
-    "apellidoCliente": "",
-    "numeroTelefono": 0,
-    "email": "",
-      "motivoCita": "",
-    "citaPendiente": false
+    "nombreCliente": String,
+    "apellidoCliente": String,
+    "numeroTelefono": Number,
+    "email": String,
+      "motivoCita": String,
+    "citaPendiente": Boolean
   });
 
   const Cliente = mongoose.model('Cliente', abogadoSchema, 'clientes');
