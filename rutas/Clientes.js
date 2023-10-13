@@ -56,3 +56,5 @@ const clienteSchema = new mongoose.Schema({
       res.status(400).json({error: error.message});
     }
   });
+
+  module.exports = router;

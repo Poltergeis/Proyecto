@@ -62,3 +62,5 @@ router.get('/', async (req, res) => {
       res.status(400).json({ error: 'Error al eliminar el usuario' });
     }
   });
+
+  module.exports = router;

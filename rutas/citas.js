@@ -61,3 +61,5 @@ router.delete('/:citaId', async (req, res) => {
       res.status(400).json({ error: 'Error al eliminar la cita' });
     }
 });
+
+module.exports = router;
