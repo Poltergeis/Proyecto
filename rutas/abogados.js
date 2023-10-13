@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const abogadoSchema = new mongoose.Schema({
     "emailCliente": String,
@@ -11,7 +12,7 @@ const abogadoSchema = new mongoose.Schema({
     "descripcion": String
   });
 
-  const Abogado = mongoose.model('Abogado', abogadoSchema, 'Citas');
+  const Abogado = mongoose.model('Abogado', abogadoSchema, 'abogados');
 
   router.get('/', async (req,res) => {
     try {
