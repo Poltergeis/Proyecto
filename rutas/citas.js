@@ -14,7 +14,7 @@ const citasSchema = new mongoose.Schema({
 
   const Citas = mongoose.model('Citas', citasSchema, 'Citas');
 
-  router.get('/', async (req, res) => {
+  router.get('/obtenerCita', async (req, res) => {
     try {
         const citas = await Citas.find();
         res.json(citas);
@@ -23,7 +23,7 @@ const citasSchema = new mongoose.Schema({
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/subirCita', async (req, res) => {
     try {
       const cita = new Citas(req.body);
       await cita.save();
@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
     }
   });
 
-  router.put('/:citaId', async (req, res) => {
+  router.put('/actualizarCita/:citaId', async (req, res) => {
     try {
         const citaId = req.params.citaId;
         const cita = req.body;
@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete('/:citaId', async (req, res) => {
+router.delete('/eliminarCita/:citaId', async (req, res) => {
     try {
       const citaId = req.params.citaId;
       const resultado = await Citas.findByIdAndDelete(citaId);

@@ -15,7 +15,7 @@ const usuarioSchema = new mongoose.Schema({
 const Usuario = mongoose.model('Usuario', usuarioSchema, 'usuarios');
 
 
-router.get('/', async (req, res) => {
+router.get('/obtenerUsuario', async (req, res) => {
     try {
       const usuario = await Usuario.find();
       res.json(usuario);
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
     }
   });
   
-  router.post('/', async (req, res) => {
+  router.post('/subirUsuario', async (req, res) => {
     try {
       const usuario = new Usuario(req.body);
       await usuario.save();
@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
     }
   });
 
-  router.put('/:usuarioId', async (req, res) => {
+  router.put('/actualizarUsuario/:usuarioId', async (req, res) => {
     try {
       const usuarioId = req.params.usuarioId;
       const datosActualizados = req.body;
@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
     }
   });
 
-  router.delete('/:usuarioId', async (req, res) => {
+  router.delete('/eliminarUsuario/:usuarioId', async (req, res) => {
     try {
       const usuarioId = req.params.usuarioId;
       const resultado = await Usuario.findByIdAndDelete(usuarioId);

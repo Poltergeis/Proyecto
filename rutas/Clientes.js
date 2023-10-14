@@ -13,7 +13,7 @@ const clienteSchema = new mongoose.Schema({
 
   const Cliente = mongoose.model('Cliente', abogadoSchema, 'clientes');
 
-  router.get('/', async (req,res) => {
+  router.get('/obtenerCliente', async (req,res) => {
     try {
       const cliente = new Cliente(req.body);
       await cliente.save();
@@ -23,7 +23,7 @@ const clienteSchema = new mongoose.Schema({
     }
   });
 
-  router.post('/', async (req, res) => {
+  router.post('/subirCliente', async (req, res) => {
     try {
       const cliente = new Cliente(req.body);
       await cliente.save();
@@ -33,7 +33,7 @@ const clienteSchema = new mongoose.Schema({
     }
   });
 
-  router.put('/:id', async (req, res) => {
+  router.put('/actualizarCliente/:id', async (req, res) => {
     try {
       const cliente = await Cliente.findByIdAndUpdate(req.params.id, req.body, {new: true}); 
       if (!cliente) {
@@ -45,7 +45,7 @@ const clienteSchema = new mongoose.Schema({
     }
   });
 
-  router.delete('/:id', async (req, res) => {
+  router.delete('/eliminarCliente/:id', async (req, res) => {
     try {
       const abogado = await Abogado.findByIdAndRemove(req.params.id);
       if (!abogado) {
