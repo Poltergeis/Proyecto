@@ -11,7 +11,7 @@ const clienteSchema = new mongoose.Schema({
     "citaPendiente": Boolean
   });
 
-  const Cliente = mongoose.model('Cliente', abogadoSchema, 'clientes');
+  const Cliente = mongoose.model('Cliente', clienteSchema, 'clientes');
 
   router.get('/obtenerCliente', async (req,res) => {
     try {
