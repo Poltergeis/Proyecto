@@ -1,22 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const Citas = require("../modelos/modeloCitas");
 
-const citasSchema = new mongoose.Schema({
-    "emailCliente": String,
-    "abogadoCitado": {
-      "nombre": String,
-      "apellido": String
-    },
-    "tituloCita": String,
-    "descripcion": String
-  });
-
-  const Citas = mongoose.model('Citas', citasSchema, 'Citas');
-
-  router.get('/obtenerCita', async (req, res) => {
+router.get('/obtenerCita/:emailCliente', async (req, res) => {
     try {
-        const citas = await Citas.find();
+        const citas = await Citas.findOne({});
         res.json(citas);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener las citas' });
@@ -33,7 +22,7 @@ router.post('/subirCita', async (req, res) => {
     }
   });
 
-  router.put('/actualizarCita/:citaId', async (req, res) => {
+  /*router.put('/actualizarCita/:citaId', async (req, res) => {
     try {
         const citaId = req.params.citaId;
         const cita = req.body;
@@ -60,6 +49,6 @@ router.delete('/eliminarCita/:citaId', async (req, res) => {
     } catch (error) {
       res.status(400).json({ error: 'Error al eliminar la cita' });
     }
-});
+});*/
 
 module.exports = router;

@@ -1,30 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const Usuario = require('../modelos/modeloUsuario');
 
 
-const usuarioSchema = new mongoose.Schema({
-    "nombre": String,
-  "apellido": String,
-  "tipoUsuario": String,
-  "email": String,
-  "contraseña": String,
-  "idCita": String
-});
-
-const Usuario = mongoose.model('Usuario', usuarioSchema, 'usuarios');
-
-
-router.get('/obtenerUsuario', async (req, res) => {
+router.get('/iniciarSesion', async (req, res) => {
     try {
-      const usuario = await Usuario.find();
+      const usuario = await Usuario.find({ email: req.email, contraseña: req.contraseña });
       res.json(usuario);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener los usuarios' });
+      res.status(500).json({ error: 'Error de inicio de sesion' });
     }
   });
   
-  router.post('/subirUsuario', async (req, res) => {
+  router.post('/registrarse', async (req, res) => {
     try {
       const usuario = new Usuario(req.body);
       await usuario.save();
@@ -34,7 +23,7 @@ router.get('/obtenerUsuario', async (req, res) => {
     }
   });
 
-  router.put('/actualizarUsuario/:usuarioId', async (req, res) => {
+  /*router.put('/actualizarUsuario/:usuarioId', async (req, res) => {
     try {
       const usuarioId = req.params.usuarioId;
       const datosActualizados = req.body;
@@ -62,5 +51,5 @@ router.get('/obtenerUsuario', async (req, res) => {
       res.status(400).json({ error: 'Error al eliminar el usuario' });
     }
   });
-
+*/
   module.exports = router;

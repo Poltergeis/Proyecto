@@ -1,17 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-
-const clienteSchema = new mongoose.Schema({
-    "nombreCliente": String,
-    "apellidoCliente": String,
-    "numeroTelefono": Number,
-    "email": String,
-      "motivoCita": String,
-    "citaPendiente": Boolean
-  });
-
-  const Cliente = mongoose.model('Cliente', clienteSchema, 'clientes');
+const Cliente = require("../modelos/modeloClientes");
 
   router.get('/obtenerCliente', async (req,res) => {
     try {
