@@ -4,20 +4,43 @@ const mongoose = require('mongoose');
 const Citas = require("../modelos/modeloCitas");
 
 router.get('/obtenerCita/:emailCliente', async (req, res) => {
+
+  const emailCliente = req.params.emailCliente;
+  const valoresEmailPermitidos = ["hotmail", "gmail", "outlook"];
+  const regex = new RegExp("^%@" + valoresEmailPermitidos.join("|") + "\\.com$", "i");
+
+    if(!regex.test(emailCliente)){
+      return res.status(400).json({ mensaje: "formato de email invalido" });
+    }
+
     try {
-        const citas = await Citas.findOne({});
-        res.json(citas);
+        const citas = await Citas.findOne({ emailCliente: emailCliente });
+        res.status(200).send(citas);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener las citas' });
     }
 });
 
 router.post('/subirCita', async (req, res) => {
+    let nuevaCita = req.body;
+    let {nombre,apellido} = nuevaCita.abogadoCitado;
+    let {tituloCita} = nuevaCita;
+    nombre = sanitizeHtml(nombre);
+    apellido = sanitizeHtml(apellido);
+    tituloCita = sanitizeHtml(tituloCita);
+    nombre = nombre.trim();
+    apellido = apellido.trim();
+    tituloCita = tituloCita.trim();
+    nuevaCita.abogadoCitado.nombre = nombre;
+    nuevaCita.abogadoCitado.apellido = apellido;
+    nuevaCita.tituloCita = tituloCita;
+
     try {
-      const cita = new Citas(req.body);
+      const cita = new Citas(nuevaCita);
       await cita.save();
       res.status(201).json(cita);
     } catch (error) {
+      console.log("error al guardar la cita",error);
       res.status(400).json({ error: 'Error al crear la cita' });
     }
   });

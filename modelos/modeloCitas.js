@@ -1,13 +1,22 @@
 const mongoose = require("mongoose");
 
 const citasSchema = new mongoose.Schema({
-    "emailCliente": String,
-    "abogadoCitado": {
-      "nombre": String,
-      "apellido": String
+    "emailCliente": {
+      type: String,
+      required: true
     },
-    "tituloCita": String,
-    "descripcion": String
+    "Telefono":{
+      type: String,
+      required: true
+    },
+    "tituloCita": {
+      type: String,
+      required: true
+    },
+    "descripcion": {
+      type: String,
+      required: true
+    }
 });
 
 module.exports = mongoose.model('Citas', citasSchema, 'Citas');

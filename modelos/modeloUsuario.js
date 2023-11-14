@@ -1,12 +1,30 @@
 const mongoose = require("mongoose");
 
-const clienteSchema = new mongoose.Schema({
-    "nombreCliente": String,
-    "apellidoCliente": String,
-    "numeroTelefono": Number,
-    "email": String,
-      "motivoCita": String,
-    "citaPendiente": Boolean
+const usuarioSchema = new mongoose.Schema({
+    "nombre": {
+      type: String,
+      required: true
+    },
+    "apellido": {
+      type: String,
+      required: true
+    },
+    "numeroTelefono": {
+      type: Number,
+      required: false
+    },
+    "email":  {
+      type: String,
+      required: true
+    },
+    "contraseña": {
+      type: String,
+      required: true
+    },
+      "tituloCita":  {
+        type: String,
+        required: false
+      }
 });
 
 module.exports = mongoose.model('Usuario', usuarioSchema, 'usuario');

@@ -2,12 +2,10 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const citasRouter = require('./rutas/citas');
-const clientesRouter = require('./rutas/Clientes');
 const usuarioRouter = require('./rutas/usuario');
 
 
 app.use('/citas', citasRouter);
-app.use('/Clientes', clientesRouter);
 app.use('/usuario', usuarioRouter);
 app.use(express.json());
 
