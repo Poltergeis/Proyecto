@@ -10,7 +10,7 @@ const usuarioSchema = new mongoose.Schema({
       required: true
     },
     "numeroTelefono": {
-      type: Number,
+      type: String,
       required: false
     },
     "email":  {

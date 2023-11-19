@@ -8,19 +8,12 @@ router.get('/iniciarSesion/:email/:contraseña', async (req, res) => {
 
     let {email,contraseña} = req.params;
 
-    const valoresEmailPermitidos = ["hotmail", "gmail", "outlook"];
-    const regex = new RegExp("^%@" + valoresEmailPermitidos.join("|") + "\\.com$", "i");
-
-    if(!regex.test(email)){
-      return res.status(400).json({ mensaje: "formato de email invalido" });
-    }
-
     try {
       const usuario = await Usuario.findOne({ email: email, contraseña: contraseña });
-      res.status(200).send(usuario);
+      res.send(usuario);
     } catch (error) {
       console.log("error al iniciar sesion, verifique que los datos tengan el formato correcto",error);
-      res.status(500).json({ error: 'Error de inicio de sesion' });
+      res.status(500).json({ error: "error al iniciar sesion" });
     }
   });
 
