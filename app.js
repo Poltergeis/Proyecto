@@ -3,13 +3,25 @@ const app = express();
 const mongoose = require('mongoose');
 const citasRouter = require('./rutas/citas');
 const usuarioRouter = require('./rutas/usuario');
+const abogadoRouter = require('./modelos/modeloAbogados');
+const bodyParser = require('body-parser');
 const cors = require("cors");
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+};
 
+app.use(cors(corsOptions));
 app.use('/citas', citasRouter);
 app.use('/usuario', usuarioRouter);
+app.use('/abogados',abogadoRouter);
+app.use(bodyParser.json());
 app.use(express.json());
-app.use(cors());
+
+app.use((err, req, res, next) => {
+  console.error('Error global:', err);
+  res.status(500).send('Error interno del servidor');
+});
 
 mongoose.connect('mongodb://127.0.0.1:27017/Citas', {
   useNewUrlParser: true,
@@ -26,6 +38,6 @@ db.on('error', (error) => {
     console.log('Conexión a MongoDB exitosa');
   });
   
-app.listen(3200, () => {
-  console.log('Servidor en ejecución en el puerto 3200');
+app.listen(9000, () => {
+  console.log('Servidor en ejecución en el puerto 9000');
 });

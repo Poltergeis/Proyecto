@@ -2,6 +2,22 @@ const express = require("express");
 const router = express.Router();
 const Abogado = require("../modelos/modeloAbogados");
 
+router.post('/agregar', async (req,res) => {
+    const {nombre,area,descripcion} = req.body;
+    try{
+        const abogado = new Abogado({
+            nombre: nombre,
+            area: area,
+            descripcion: descripcion
+        });
+        await abogado.save();
+        res.status(201).send({ message: "abogado agregado con exito" });
+    }catch(error){
+        console.log("error al agregar abogados",error);
+        res.status(500).send({error: "error al agregar el abogado"});
+    }
+});
+
 router.get("/agregarAbogado", async (req,res) => {
     let {nombre} = req.body;
     let datosNuevos = req.body;

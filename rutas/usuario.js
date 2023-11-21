@@ -4,13 +4,16 @@ const mongoose = require('mongoose');
 const Usuario = require('../modelos/modeloUsuario');
 
 
-router.get('/iniciarSesion/:email/:contraseña', async (req, res) => {
+router.get('/login/:email/:contrasenia', async (req, res) => {
 
-    let {email,contraseña} = req.params;
+    let {email,contrasenia} = req.params;
 
     try {
-      const usuario = await Usuario.findOne({ email: email, contraseña: contraseña });
-      res.send(usuario);
+      const usuario = await Usuario.findOne({ email: email, contraseña: contrasenia });
+      if(!usuario){
+        res.send({ resultado: false });
+      }
+      res.status(200).json(usuario);
     } catch (error) {
       console.log("error al iniciar sesion, verifique que los datos tengan el formato correcto",error);
       res.status(500).json({ error: "error al iniciar sesion" });
