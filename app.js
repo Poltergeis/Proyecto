@@ -1,9 +1,8 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const citasRouter = require('./rutas/citas');
 const usuarioRouter = require('./rutas/usuario');
-const abogadoRouter = require('./modelos/modeloAbogados');
+const abogadoRouter = require('./rutas/abogados');
 const bodyParser = require('body-parser');
 const cors = require("cors");
 
@@ -12,10 +11,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use('/citas', citasRouter);
 app.use('/usuario', usuarioRouter);
-app.use('/abogados',abogadoRouter);
+app.use('/abogado',abogadoRouter);
+
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use((err, req, res, next) => {

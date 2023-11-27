@@ -1,7 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const Usuario = require('../modelos/modeloUsuario');
+
+router.use(express.json());
+
+router.post('/registrarse', async (req, res) => {
+
+  let {email,contrasenia,nombre} = req.body;
+
+  const data = new Usuario({
+      nombre: nombre,
+      tipoUsuario: "cliente",
+      email: email,
+      contraseña: contrasenia
+  });
+
+  try {
+      const dataToSave = data;
+      await data.save();
+      return res.status(200).json({ message: "nuevo usuario registrado", usuario: dataToSave });
+  }
+  catch (error) {
+      return res.status(400).json({message: error.message})
+  }
+});
+
+
+router.get('/getAll', async (req,res) => {
+  try{
+    const usuarios = await Usuario.find();
+    res.status(200).json({ resultado: usuarios });
+  }catch(error){
+    res.status(500).json({ error: "error al cargar los usuarios" });
+  }
+});
+
 
 
 router.get('/login/:email/:contrasenia', async (req, res) => {
@@ -11,135 +44,73 @@ router.get('/login/:email/:contrasenia', async (req, res) => {
     try {
       const usuario = await Usuario.findOne({ email: email, contraseña: contrasenia });
       if(!usuario){
-        res.send({ resultado: false });
+        return res.json({ resultado: false });
       }
-      res.status(200).json(usuario);
+      return res.status(200).json({ resultado: usuario });
     } catch (error) {
       console.log("error al iniciar sesion, verifique que los datos tengan el formato correcto",error);
-      res.status(500).json({ error: "error al iniciar sesion" });
+      return res.status(500).json({ error: "error al iniciar sesion" });
     }
   });
 
-  router.get('/filtrarUsuarios/:email', async (req,res) => {
-    const {email} = req.params;
+  router.get('/filtro/:datoSinDefinir', async (req,res) => {
+    let def = "nombre";
+    const filtro = req.params.datoSinDefinir;
 
-    if(email.length === 0){
-      return;
+    const telefonoRegex = /^\d{10}$/;
+
+    const emailRegex = new RegExp(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/);
+
+    if(telefonoRegex.test(filtro)){
+      def = "telefono";
+    }else{
+      if(emailRegex.test(filtro)){
+        def = "email";
+      }
     }
+
+    switch(def.charAt(0)){
+      case 'n':
+        await Usuario.find({ nombre: filtro }).then((response) => {
+          return res.status(200).json({ resultado: response });
+        }).catch((error) => {
+          return res.status(500).json({ error: "error al buscar por nombre" });
+        });
+        return;
+
+      case 't':
+        await Usuario.find({ numeroTelefono: filtro }).then((response) => {
+          return res.status(200).json({ resultado: response });
+        }).catch((error) => {
+          return res.status(500).json({ error: "error al buscar por nombre" });
+        });
+        return;
+
+      case 'e':
+        await Usuario.find({ email: filtro }).then((response) => {
+          return res.status(200).json({ resultado: response });
+        }).catch((error) => {
+          return res.status(500).json({ error: "error al buscar por nombre" });
+        });
+        return;
+    }
+
+  });
+
+  router.put('/guardarInfo/:id', async (req, res) => {
+    const {id} = req.params;
+
+    const {telefono,titulo,descripcion} = req.body;
 
     try{
-
-      const usuarios = await Usuario.find({ email: email });
-      res.status(200).send(usuarios);
-
+      await Usuario.findByIdAndUpdate(id, {numeroTelefono: telefono, tituloCita: titulo, descripcionCita: descripcion},
+        {new: true});
+      res.status(200).json({ resultado: "datos agregados con exito" });
     }catch(error){
-      console.error("error al filtrar usuarios",error);
-      res.status(500).json({ error: "error al filtrar usuarios" });
+      console.log("error al agregar los datos",error);
+      res.status(500).json({ error: error });
     }
 
-  });
-  
-  router.post('/registrarse', async (req, res) => {
-
-    let {nombre,apellido,numeroTelefono,email} = req.body;
-    let datosNuevos = req.body;
-    if(isNaN(numeroTelefono)){
-      return res.status(400).json({ mensaje: "el numero de telefono debe ser un numero de 10 digitos" });
-    }else{
-      numeroTelefono = parseInt(numeroTelefono);
-      if(numeroTelefono > 9999999999 || numeroTelefono < 1000000000){
-        return res.status(400).json({ mensaje: "el numero de telefono debe ser un numero de 10 digitos" });
-      }
-    }
-
-    const valoresEmailPermitidos = ["hotmail", "gmail", "outlook"];
-    const regex = new RegExp("^%@" + valoresEmailPermitidos.join("|") + "\\.com$", "i");
-
-    if(!regex.test(email)){
-      return res.status(400).json({ mensaje: "formato de email invalido" });
-    }
-
-    nombre = sanitizeHtml(nombre);
-    apellido = sanitizeHtml(apellido);
-    nombre = nombre.trim();
-    apellido = apellido.trim();
-
-    datosNuevos.nombre = nombre;
-    datosNuevos.apellido = apellido;
-
-    try {
-      const usuario = new Usuario(datosNuevos);
-      await usuario.save();
-      res.status(201).json(usuario);
-    } catch (error) {
-      console.log("error al crear el usuario",error);
-      res.status(500).json({ error: 'Error al crear el usuario' });
-    }
-  });   
-
-  router.put('/actualizarUsuario/:email/:contraseña', async (req, res) => {
-    let emailAntiguo = req.params.email;
-    const contraseña = req.params.contraseña;
-
-    const valoresEmailPermitidos = ["hotmail", "gmail", "outlook"];
-    const regex = new RegExp("^%@" + valoresEmailPermitidos.join("|") + "\\.com$", "i");
-
-    if(!regex.test(emailAntiguo)){
-      return res.status(400).json({ mensaje: "formato de email invalido" });
-    }
-
-    let datosNuevos = req.body;
-    if(!regex.test(datosNuevos.email)){
-      return res.status(400).json({ mensaje: "formato de email invalido" });
-    }
-    if(isNaN(datosNuevos.numeroTelefono)){
-      return res.status(400).json({ mensaje: "el numero de telefono debe ser un numero de 10 digitos" });
-    }else{
-      datosNuevos.numeroTelefono = parseInt(datosNuevos.numeroTelefono);
-      if(datosNuevos.numeroTelefono < 1000000000 || datosNuevos.numeroTelefono > 9999999999){
-        return res.status(400).json({ mensaje: "el numero de telefono debe ser un numero de 10 digitos" });
-      }
-    }
-    datosNuevos.nombre = sanitizeHtml(datosNuevos.nombre);
-    datosNuevos.nombre = datosNuevos.nombre.trim();
-    datosNuevos.apellido = sanitizeHtml(datosNuevos.apellido);
-    datosNuevos.apellido = datosNuevos.apellido.trim();
-
-    try {
-      const resultado = await Usuario.findOneAndUpdate({ email: emailAntiguo, contraseña: contraseña }, 
-      datosNuevos, { new: true });
-      if (!resultado) {
-        res.status(404).json({ error: 'Usuario no encontrado' });
-      } else {
-        res.status(200).json({ resultado: "usuario actualizado con exito" });
-      }
-    } catch (error) {
-      res.status(400).json({ error: 'Error al actualizar el usuario' });
-    }
-  });
-
-  router.delete('/eliminarUsuario/:email/:contraseña', async (req, res) => {
-
-    let emailAntiguo = req.params.email;
-    const contraseña = req.params.contraseña;
-
-    const valoresEmailPermitidos = ["hotmail", "gmail", "outlook"];
-    const regex = new RegExp("^%@" + valoresEmailPermitidos.join("|") + "\\.com$", "i");
-
-    if(!regex.test(emailAntiguo)){
-      return res.status(400).json({ mensaje: "formato de email invalido" });
-    }
-
-    try {
-      const resultado = await Usuario.findOneAndDelete({ email:emailAntiguo, contraseña: contraseña });
-      if (!resultado) {
-        res.status(404).json({ error: 'Usuario no encontrado' });
-      } else {
-        res.json({ mensaje: 'Usuario eliminado exitosamente' });
-      }
-    } catch (error) {
-      res.status(400).json({ error: 'Error al eliminar el usuario' });
-    }
   });
 
   module.exports = router;
