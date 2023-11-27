@@ -8,6 +8,8 @@ router.post('/registrarse', async (req, res) => {
 
   let {email,contrasenia,nombre} = req.body;
 
+  //nombre = sani
+
   const data = new Usuario({
       nombre: nombre,
       tipoUsuario: "cliente",

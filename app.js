@@ -5,6 +5,8 @@ const usuarioRouter = require('./rutas/usuario');
 const abogadoRouter = require('./rutas/abogados');
 const bodyParser = require('body-parser');
 const cors = require("cors");
+require("dotenv").config();
+mongoose.set("strictQuery", false);
 
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -23,7 +25,7 @@ app.use((err, req, res, next) => {
   res.status(500).send('Error interno del servidor');
 });
 
-mongoose.connect('mongodb://127.0.0.1:27017/Citas', {
+mongoose.connect(process.env.URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -38,6 +40,6 @@ db.on('error', (error) => {
     console.log('Conexión a MongoDB exitosa');
   });
   
-app.listen(9000, () => {
-  console.log('Servidor en ejecución en el puerto 9000');
+app.listen(process.env.PORT, () => {
+  console.log(`Servidor en ejecución en el puerto ${process.env.PORT}`);
 });
