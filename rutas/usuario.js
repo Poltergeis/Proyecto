@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../modelos/modeloUsuario');
+const sanitizeHTML = require('sanitize-html');
 
 router.use(express.json());
 
@@ -8,7 +9,9 @@ router.post('/registrarse', async (req, res) => {
 
   let {email,contrasenia,nombre} = req.body;
 
-  //nombre = sani
+  nombre = sanitizeHTML(nombre).trim();
+  contrasenia = sanitizeHTML(contrasenia).trim();
+  email = sanitizeHTML(email).trim();
 
   const data = new Usuario({
       nombre: nombre,
@@ -42,6 +45,8 @@ router.get('/getAll', async (req,res) => {
 router.get('/login/:email/:contrasenia', async (req, res) => {
 
     let {email,contrasenia} = req.params;
+    email = sanitizeHTML(email).trim();
+    contrasenia = sanitizeHTML(contrasenia).trim();
 
     try {
       const usuario = await Usuario.findOne({ email: email, contraseña: contrasenia });
@@ -57,7 +62,8 @@ router.get('/login/:email/:contrasenia', async (req, res) => {
 
   router.get('/filtro/:datoSinDefinir', async (req,res) => {
     let def = "nombre";
-    const filtro = req.params.datoSinDefinir;
+    let filtro = req.params.datoSinDefinir;
+    filtro = sanitizeHTML(filtro).trim();
 
     const telefonoRegex = /^\d{10}$/;
 
@@ -103,6 +109,8 @@ router.get('/login/:email/:contrasenia', async (req, res) => {
     const {id} = req.params;
 
     const {telefono,titulo,descripcion} = req.body;
+    titulo = sanitizeHTML(titulo).trim();
+    descripcion = sanitizeHTML(descripcion).trim();
 
     try{
       await Usuario.findByIdAndUpdate(id, {numeroTelefono: telefono, tituloCita: titulo, descripcionCita: descripcion},
@@ -112,6 +120,18 @@ router.get('/login/:email/:contrasenia', async (req, res) => {
       console.log("error al agregar los datos",error);
       res.status(500).json({ error: error });
     }
+
+  });
+
+  router.delete('/eliminar/:id', async(req,res) => {
+    const {id} = req.params;
+
+    await Usuario.findByIdAndDelete(id).then(() => {
+      res.status(200).json({ resultado: "usuario eliminado con exito" });
+    }).catch((error) => {
+      console.log(`error al eliminar el usuario ${error.message}`);
+      res.status(500).json({ error: `error al eliminar el usuario ${error.message}` });
+    });
 
   });
 
