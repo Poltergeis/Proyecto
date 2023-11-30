@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Abogado = require("../modelos/modeloAbogados");
+const sanitizeHTML = require('sanitize-html');
 
 router.use(express.json());
 
@@ -14,7 +15,12 @@ router.get('/getAll', async (req,res) => {
 });
 
 router.post('/agregar', async (req,res) => {
-    const {nombre,area,descripcion} = req.body;
+    let {nombre,area,descripcion} = req.body;
+
+    nombre = sanitizeHTML(nombre).trim();
+    area = sanitizeHTML(area).trim();
+    descripcion = sanitizeHTML(descripcion).trim();
+
     try{
         const abogado = new Abogado({
             nombre: nombre,
@@ -32,7 +38,8 @@ router.post('/agregar', async (req,res) => {
 router.delete("/eliminar/:nombre", async (req,res) =>{
     try{
 
-        const nombre = req.params.nombre;
+        let nombre = req.params.nombre;
+        nombre = sanitizeHTML(nombre).trim();
         const abogado = await Abogado.findOne({ nombre: nombre });
 
         if(!abogado){
@@ -46,6 +53,24 @@ router.delete("/eliminar/:nombre", async (req,res) =>{
         console.log("error al eliminar el abogado", error);
         return res.status(500).json({ error: "se ha producido un error durante el proceso de borrar el abogado de la base de datos" });
     }
+});
+
+router.put('/actualizar/:id', async(req,res) => {
+    const {id} = req.params;
+    let {nombre,area,descripcion} = req.body;
+
+    nombre = sanitizeHTML(nombre).trim();
+    area = sanitizeHTML(area).trim();
+    descripcion = sanitizeHTML(descripcion).trim();
+
+    await Abogado.findByIdAndUpdate(id, 
+        {nombre:nombre, area:area, descripcion:descripcion} ).then(() => {
+            res.status(200).json({ resultado: "abogado actualizado con exito" });
+        }).catch((error) => {
+            console.log(`error al actualizar el abogado\n${error.message}`);
+            res.status(500).json({ error: `error al actualizar el abogado ${error.message}` });
+        });
+
 });
 
 module.exports = router;

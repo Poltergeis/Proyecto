@@ -108,7 +108,7 @@ router.get('/login/:email/:contrasenia', async (req, res) => {
   router.put('/guardarInfo/:id', async (req, res) => {
     const {id} = req.params;
 
-    const {telefono,titulo,descripcion} = req.body;
+    let {telefono,titulo,descripcion} = req.body;
     titulo = sanitizeHTML(titulo).trim();
     descripcion = sanitizeHTML(descripcion).trim();
 
