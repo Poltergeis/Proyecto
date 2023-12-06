@@ -1,0 +1,27 @@
+GET http://localhost:9000/abogado/getAll HTTP/1.1
+Content-Type: application/json
+###
+
+POST http://localhost:9000/abogado/agregar HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "NombreAbogado",
+  "area": "AreaAbogado",
+  "descripcion": "Descripción del abogado"
+}
+###
+
+DELETE http://localhost:9000/abogado/eliminar/Nuevo%20NombreAbogado HTTP/1.1
+Content-Type: application/json
+###
+
+PUT http://localhost:9000/abogado/actualizar/6568e9544baf0233378c47e3 HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Nuevo NombreAbogado",
+  "area": "Nueva AreaAbogado",
+  "descripcion": "Nueva descripción del abogado"
+}
+###

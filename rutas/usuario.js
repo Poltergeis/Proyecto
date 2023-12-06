@@ -2,8 +2,23 @@ const express = require('express');
 const router = express.Router();
 const Usuario = require('../modelos/modeloUsuario');
 const sanitizeHTML = require('sanitize-html');
+const bcrypt = require('bcrypt');
 
 router.use(express.json());
+
+router.get('/requerirInfo/:id', async(req,res) => {
+  const id = req.params.id;
+  try{
+    const usuario = await Usuario.findById(id);
+    if(!usuario){
+      return res.status(404).json({ resultado: false });
+    }
+    return res.status(200).json({ resultado: { nombre: usuario.nombre, tipoUsuario: usuario.tipoUsuario } });
+  }catch(error){
+    console.log(`error al obtener la informacion del usuario ${error.message}`);
+    return res.status(500).json({resultado: { error: "error: " + error.message }});
+  }
+});
 
 router.post('/registrarse', async (req, res) => {
 
@@ -11,7 +26,7 @@ router.post('/registrarse', async (req, res) => {
 
   nombre = sanitizeHTML(nombre).trim();
   contrasenia = sanitizeHTML(contrasenia).trim();
-  email = sanitizeHTML(email).trim();
+  email = email.trim();
 
   const data = new Usuario({
       nombre: nombre,
@@ -109,12 +124,30 @@ router.get('/login/:email/:contrasenia', async (req, res) => {
     const {id} = req.params;
 
     let {telefono,titulo,descripcion} = req.body;
+
+    if((!telefono || !titulo) || !descripcion){
+      return res.status(404).json({ resultado: "datos incompletos, operacion cancelada" });
+    }
+    try{
+      const user = await Usuario.findById(id)
+        if(!user){
+          return res.status(404).json({ resultado: "el usuario no existe" });
+        }
+    }
+    catch(error){
+      return res.status(500).json({ error: `operacion cancelada, error en la busqueda del usuario ${error.message}` });
+    }
+
     titulo = sanitizeHTML(titulo).trim();
     descripcion = sanitizeHTML(descripcion).trim();
 
     try{
-      await Usuario.findByIdAndUpdate(id, {numeroTelefono: telefono, tituloCita: titulo, descripcionCita: descripcion},
-        {new: true});
+      let usuario = await Usuario.findById(id);
+      usuario.numeroTelefono = telefono;
+      usuario.tituloCita = titulo;
+      usuario.descripcionCita = descripcion;
+      await usuario.validate();
+      await usuario.save();
       res.status(200).json({ resultado: "datos agregados con exito" });
     }catch(error){
       console.log("error al agregar los datos",error);
@@ -126,13 +159,22 @@ router.get('/login/:email/:contrasenia', async (req, res) => {
   router.delete('/eliminar/:id', async(req,res) => {
     const {id} = req.params;
 
-    await Usuario.findByIdAndDelete(id).then(() => {
+    if(!id){
+      return res.status(404).json({ resultado: "datos incompletos, operacion cancelada" });
+    }
+
+    try{
+      const usuario = await Usuario.findById(id);
+      if(!usuario){
+        return res.status(404).json({ resultado: "usuario no existe" });
+      }
+      await Usuario.deleteOne(usuario);
       res.status(200).json({ resultado: "usuario eliminado con exito" });
-    }).catch((error) => {
+
+    }catch(error){
       console.log(`error al eliminar el usuario ${error.message}`);
       res.status(500).json({ error: `error al eliminar el usuario ${error.message}` });
-    });
-
+    }
   });
 
   module.exports = router;

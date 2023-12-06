@@ -4,17 +4,15 @@ const usuarioSchema = new mongoose.Schema({
     "nombre": {
       type: String,
       required: true,
-      validate: () => {
-        const nombre = this.nombre;
-        const regex = /^[a-zA-Z]+$/;
+      validate: (nombre) => {
+        const regex = /^[a-zA-Z0-9\s.,áéíóúüñ-]+$/;
         return regex.test(nombre);
       }
     },
     "tipoUsuario": {
       type: String,
       required: true,
-      validate: () => {
-        const tipo = this.tipoUsuario;
+      validate: (tipo) => {
         const usuariosValidos = ["admin","cliente"];
         return usuariosValidos.includes(tipo);
       }
@@ -22,8 +20,7 @@ const usuarioSchema = new mongoose.Schema({
     "numeroTelefono": {
       type: String,
       required: false,
-      validate: () => {
-        const telefono = this.numeroTelefono;
+      validate: (telefono) => {
         const regex = /^[0-9]+$/;
         return regex.test(telefono);
       }
@@ -31,22 +28,24 @@ const usuarioSchema = new mongoose.Schema({
     "email":  {
       type: String,
       required: true,
-      validate: () => {
-        const email = this.email;
+      validate: (email) => {
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
         return regex.test(email);
       }
     },
     "contraseña": {
       type: String,
-      required: true
+      required: true,
+      validate: (psw) => {
+        const regex = /^[a-zA-Z0-9\s.,áéíóúüñ-]+$/;
+        return regex.test(psw);
+      }
     },
     "tituloCita":  {
       type: String,
       required: false,
-      validate: () => {
-        const titulo = this.tituloCita;
-        const regex = /^[a-zA-Z]+$/;
+      validate: (titulo) => {
+        const regex = /^[a-zA-Z0-9\s.,áéíóúüñ-]+$/;
         return regex.test(titulo);
       },
       max: 100
@@ -54,9 +53,8 @@ const usuarioSchema = new mongoose.Schema({
     "descripcionCita": {
       type: String,
       required: false,
-      validate: () => {
-        const desc = this.descripcionCita;
-        const regex = /^[a-zA-Z]+$/;
+      validate: (desc) => {
+        const regex = /^[a-zA-Z0-9\s.,áéíóúüñ-]+$/;
         return regex.test(desc);
       }
     }

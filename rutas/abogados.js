@@ -17,6 +17,10 @@ router.get('/getAll', async (req,res) => {
 router.post('/agregar', async (req,res) => {
     let {nombre,area,descripcion} = req.body;
 
+    if((!nombre || !area) || !descripcion){
+        return res.status(404).json({ resultado: "datos faltantes, operacion cancelada" });
+    }
+
     nombre = sanitizeHTML(nombre).trim();
     area = sanitizeHTML(area).trim();
     descripcion = sanitizeHTML(descripcion).trim();
@@ -31,7 +35,7 @@ router.post('/agregar', async (req,res) => {
         res.status(201).json({ message: "abogado agregado con exito" });
     }catch(error){
         console.log("error al agregar abogados",error);
-        res.status(500).json({error: "error al agregar el abogado"});
+        res.status(500).json({error: `error al agregar el abogado ${error.message}`});
     }
 });
 
@@ -39,6 +43,11 @@ router.delete("/eliminar/:nombre", async (req,res) =>{
     try{
 
         let nombre = req.params.nombre;
+
+        if(!nombre){
+            return res.status(404).json({ resultado: "operacion cancelada, datos incompletos" });
+        }
+
         nombre = sanitizeHTML(nombre).trim();
         const abogado = await Abogado.findOne({ nombre: nombre });
 
@@ -59,17 +68,28 @@ router.put('/actualizar/:id', async(req,res) => {
     const {id} = req.params;
     let {nombre,area,descripcion} = req.body;
 
+    if((!id || !nombre) || (!area || !descripcion)){
+        return res.status(404).json({ resultado: "operacion cancelada debido a falta de datos" });
+    }
+
     nombre = sanitizeHTML(nombre).trim();
     area = sanitizeHTML(area).trim();
     descripcion = sanitizeHTML(descripcion).trim();
 
-    await Abogado.findByIdAndUpdate(id, 
-        {nombre:nombre, area:area, descripcion:descripcion} ).then(() => {
-            res.status(200).json({ resultado: "abogado actualizado con exito" });
-        }).catch((error) => {
-            console.log(`error al actualizar el abogado\n${error.message}`);
-            res.status(500).json({ error: `error al actualizar el abogado ${error.message}` });
-        });
+    try{
+        let abogado = await Abogado.findById(id);
+        if(!abogado){
+            return res.status(404).json({ resultado: "abogado inexistente" });
+        }
+        abogado.nombre = nombre;
+        abogado.area = area;
+        abogado.descripcion = descripcion;
+        await abogado.save();
+        return res.status(200).json({ resultado: "operacion exitosa" });
+    }catch(error){
+        console.log(`error al actualizar el abogado\n${error.message}`);
+        res.status(500).json({ error: `error al actualizar el abogado ${error.message}` });
+    }
 
 });
 

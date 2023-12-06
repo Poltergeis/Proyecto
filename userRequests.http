@@ -1,0 +1,44 @@
+POST http://localhost:9000/usuario/registrarse HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "ejemplo@hotmail.com",
+    "contrasenia": "hola mundo",
+    "nombre": "juan tanavera"
+}
+###
+
+GET http://localhost:9000/usuario/getAll HTTP/1.1
+Content-Type: application/json
+###
+
+GET http://localhost:9000/usuario/login/ejemplo@hotmail.com/123123 HTTP/1.1
+Content-Type: application/json
+###
+
+GET http://localhost:9000/usuario/filtro/ejemplo@hotmail.com HTTP/1.1
+Content-Type: application/json
+###
+
+PUT http://localhost:9000/usuario/guardarInfo/655f0be674011a868a259545 HTTP/1.1
+Content-Type: application/json
+
+{
+    "numeroTelefono": "9651131212"
+}
+###
+
+PUT http://localhost:9000/usuario/guardarInfo/6568ecd07048b5c17ae4c72c HTTP/1.1
+Content-Type: application/json
+
+{
+    "telefono": "9876761111h",
+    "titulo": "titulo ejemplo",
+    "descripcion": "descripcion nueva"
+}
+###
+
+DELETE http://localhost:9000/usuario/eliminar/6568eae2cc5ab1f115e4e7c9 HTTP/1.1
+Content-Type: application/json
+###
+
