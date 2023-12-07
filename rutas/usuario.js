@@ -13,7 +13,7 @@ router.get('/requerirInfo/:id', async(req,res) => {
     if(!usuario){
       return res.status(404).json({ resultado: false });
     }
-    return res.status(200).json({ resultado: { nombre: usuario.nombre, tipoUsuario: usuario.tipoUsuario } });
+    return res.status(200).json({ resultado: { nombre: usuario.nombre, email: email } });
   }catch(error){
     console.log(`error al obtener la informacion del usuario ${error.message}`);
     return res.status(500).json({resultado: { error: "error: " + error.message }});
