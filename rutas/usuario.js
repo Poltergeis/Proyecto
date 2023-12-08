@@ -13,7 +13,7 @@ router.get('/requerirInfo/:id', async(req,res) => {
     if(!usuario){
       return res.status(404).json({ resultado: false });
     }
-    return res.status(200).json({ resultado: { nombre: usuario.nombre, email: email } });
+    return res.status(200).json({ resultado: { nombre: usuario.nombre, email: usuario.email } });
   }catch(error){
     console.log(`error al obtener la informacion del usuario ${error.message}`);
     return res.status(500).json({resultado: { error: "error: " + error.message }});
@@ -174,6 +174,23 @@ router.get('/login/:email/:contrasenia', async (req, res) => {
     }catch(error){
       console.log(`error al eliminar el usuario ${error.message}`);
       res.status(500).json({ error: `error al eliminar el usuario ${error.message}` });
+    }
+  });
+
+  router.post('/secretRoute/agregarAdministrador', async(req,res) => {
+    const {nombre, email, password} = req.body;
+    try{
+      const usuario = new Usuario({
+        nombre: nombre,
+        tipoUsuario: "admin",
+        email: email,
+        contraseña: password
+      });
+      await usuario.save();
+      return res.status(201).json({ resultado: "exito al agregar el usuario" });
+    }catch(error){
+      console.log(`error in secret Route ${error.message}`);
+      return res.status(500).json({ error: `error in secretRoute:\n${error.message}` });
     }
   });
 
