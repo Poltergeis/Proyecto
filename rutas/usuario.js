@@ -10,9 +10,6 @@ router.get('/requerirInfo/:id', async(req,res) => {
   const id = req.params.id;
   try{
     const usuario = await Usuario.findById(id);
-    if(!usuario){
-      return res.status(404).json({ resultado: false });
-    }
     return res.status(200).json({ resultado: { nombre: usuario.nombre, email: usuario.email } });
   }catch(error){
     console.log(`error al obtener la informacion del usuario ${error.message}`);
